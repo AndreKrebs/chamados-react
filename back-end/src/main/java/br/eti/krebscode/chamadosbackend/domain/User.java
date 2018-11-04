@@ -10,9 +10,9 @@ public class User implements Serializable {
 	private String username;
 	private String password;
 	
-	public User() {
+	/*public User() {
 		super();
-	}
+	}*/
 
 //	public Integer getId() {
 //		return id;

@@ -1,23 +1,36 @@
 import React, { Component } from "react";
 import { request } from '../../util/APIUtils';
 
+
 class Login extends Component {
 
     constructor() {
         super();
-        this.handleSubmit = this.handleSubmit.bind(this);
+
+        this.submitForm = this.submitForm.bind(this);
+
+        this.state = {
+            username:"",
+            password:""
+        };
+
+        this.onChange = (event) => {
+            const state = Object.assign({}, this.state);
+            const campo = event.target.name;
+            state[campo] = event.target.value;
+            this.setState(state);
+        };
     }
 
-    handleSubmit(event) {
-        event.preventDefault();
-        const data = new FormData(event.target);
-        console.log(data);
+    submitForm() {
+        const data = Object.assign({}, this.state)
 
         request({
-            url: request.API_BASE_URL + "/auth/signin",
+            url: "/login",
             method: 'POST',
             body: JSON.stringify(data)
-        });
+        })
+        // .then();
 
     }
 
@@ -25,19 +38,17 @@ class Login extends Component {
 
         return (
             <div>
-                <form onSubmit={this.handleSubmit}>
                     <label>User/E-mail:</label><br />
-                    <input type="text" name="login" />
+                    <input type="text" value={this.state.username} name="username" onChange={this.onChange}/>
                     <br />
                     <br />
                     
                     <label>Password:</label><br />
-                    <input type="password" name="password" />
+                    <input type="password" value={this.state.password} name="password" onChange={this.onChange}/>
                     <br />
                     <br />
-
-                    <input type="submit" value="Submit" />
-                </form>
+                {JSON.stringify(this.state)}
+                <button onClick={this.submitForm}>Submit</button>
             </div>
         );
     }

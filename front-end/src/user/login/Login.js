@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { ACCESS_TOKEN } from '../../constants';
 import { request } from '../../util/APIUtils';
 
 
@@ -30,7 +31,20 @@ class Login extends Component {
             method: 'POST',
             body: JSON.stringify(data)
         })
-        // .then();
+        /*.then((data) => {
+            data.text().then((token) => {
+                alert(token)
+            })
+        })*/
+        .then(function(response){
+            if(response.ok) {
+                response.text().then((token) => {
+                    if(token){
+                        localStorage.setItem(ACCESS_TOKEN, token)
+                    }
+                })
+            }
+        });
 
     }
 

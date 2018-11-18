@@ -2,11 +2,12 @@ import { ACCESS_TOKEN, API_BASE_URL } from '../constants';
 
 export function request (options) {
     const headers = {
-        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
     }
     
     if(localStorage.getItem(ACCESS_TOKEN)) {
-        headers.append('Authorzation', 'Bearer ' + localStorage.getItem(ACCESS_TOKEN))
+        headers.append('Authorization', 'Bearer ' + localStorage.getItem(ACCESS_TOKEN))
         
     }
 
@@ -17,17 +18,18 @@ export function request (options) {
         'Content-Type': 'application/json'
         },*/
         body: options.body
-    })
-    .then(function(response){ 
-        console.log(response) 
-        /*debugger;
-        response.json().then(json => {
-            if(!response.ok) {
-                return Promise.reject(json);
-            }
-            return json;
-        })*/
     });
+    /*
+    .then(function(response){ 
+        console.log(response.headers.values());
+        if(!response.ok) {
+            return Promise.reject(response);
+        }
+        return response;
+    })
+    .then(function(data){
+        console.log("")
+    });*/
 };
 
 export function signup(signupRequest) {

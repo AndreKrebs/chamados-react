@@ -32,7 +32,6 @@ public class TesteResourceTest {
 	}
 	
 	@Test
-	@Transactional
 	public void getTeste() throws Exception {
 		mockMvc.perform(get("/teste"))
 		.andExpect(status().isOk());

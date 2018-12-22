@@ -5,8 +5,6 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import javax.persistence.EntityManager;
-
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -21,25 +20,31 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import br.eti.krebscode.chamadosbackend.BackEndApplication;
 import br.eti.krebscode.chamadosbackend.domain.User;
 import br.eti.krebscode.chamadosbackend.repository.UserRepository;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = BackEndApplication.class)
+@SpringBootTest
+@ActiveProfiles("test")
 public class LoginTest {
 
 	@Autowired
-	private WebApplicationContext context;
+	BCryptPasswordEncoder passwordEncoder;
 	
 	@Autowired
-	private static User user;
+	private WebApplicationContext context;
+
 	
 	@Autowired
 	private UserRepository userRepository;
 	
 	private MockMvc restMvc;
+	
+	
+	private static final String USER_EMAIL = "teste@gmail.com";
+	private static final String USER_NAME = "Name Test";
+	private static final String USER_PASWORD = "teste";
 	
 
 	@Before
@@ -49,32 +54,31 @@ public class LoginTest {
 				.apply(springSecurity())
 				.build();
 		
-//		createUser();
+		createUser();
 	}
 	
-
-	
-	@Before
+	@Transactional
 	public void createUser() {
+		// garante que não existe registros na tabela
 		userRepository.deleteAll();
-        
-		user.setEmail("teste@gmail.com");
-		user.setName("Name Test");
-		user.setPassword(new BCryptPasswordEncoder().encode("12345"));
 		
-//		userRepository.save(user);
+		// cria um novo usuário
+		User user = new User();
+		
+		user.setEmail(USER_EMAIL);
+		user.setName(USER_NAME);
+		user.setPassword(passwordEncoder.encode(USER_PASWORD));
+		
+		userRepository.save(user);
 		
 	}
 
+	
 	@Test
 	public void loginSuccessToken() throws Exception {
-		System.out.println("#################################################");
-
-		User user2 = userRepository.findByEmail("teste@gmail.com");
-		System.out.println(user2.getName());
-		
+	
 		MvcResult result = restMvc.perform(post("/login")
-				.content("{\"username\":\"admin\",\"password\":\"password\"}"))
+				.content("{\"email\":\""+USER_EMAIL+"\",\"password\":\""+USER_PASWORD+"\"}"))
 				.andExpect(status().isOk())
 				.andReturn();
 		
@@ -84,7 +88,6 @@ public class LoginTest {
 	}
 	
 	@Test
-	@Transactional
 	public void invalidLogin() throws Exception {
 
 		restMvc.perform(post("/login")

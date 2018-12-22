@@ -13,9 +13,6 @@ import br.eti.krebscode.chamadosbackend.repository.UserRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private UserRepository userRepository;
